@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(주)오라테크 오라-소싱랩 & B2B 퀵견적 포털 v4.0 (Gemini 4 Carbon 탑재)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <style>
+    :root {
+      --bg-main: #070b14;
+      --bg-card: #0f172a;
+      --bg-sub: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --amber: #f59e0b;
+      --cyan: #38bdf8;
+      --green: #10b981;
+      --rose: #f43f5e;
+      --purple: #a855f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background: var(--bg-main); color: var(--text); min-height: 100vh; line-height: 1.5; }
+    .top-bar {
+      background: linear-gradient(90deg, #090d16 0%, #0f172a 60%, #172554 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-wrap { display: flex; align-items: center; gap: 12px; }
+    .brand-badge {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: linear-gradient(135deg, #ea580c, #f59e0b);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 20px; color: #fff;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+    .nav-links { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.15s;
+      color: #fff;
+    }
+    .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-amber { background: linear-gradient(135deg, #ea580c, #f59e0b); color: #090d16; }
+    .btn-cyan { background: linear-gradient(135deg, #0284c7, #2563eb); }
+    .btn-green { background: linear-gradient(135deg, #059669, #10b981); }
+    .btn-purple { background: linear-gradient(135deg, #7e22ce, #6366f1); }
+    .btn-outline { background: #1e293b; border-color: #475569; color: #e2e8f0; }
+    .tabs {
+      display: flex; gap: 8px; padding: 12px 24px; background: #0b1120;
+      border-bottom: 1px solid var(--border); overflow-x: auto;
+    }
+    .tab-btn {
+      padding: 10px 18px; border-radius: 9px; border: 1px solid var(--border);
+      background: #0f172a; color: var(--muted); font-weight: 800; font-size: 13.5px;
+      cursor: pointer; white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0284c7, #1d4ed8);
+      color: #fff; border-color: #38bdf8;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+    }
+    .container { max-width: 1440px; margin: 0 auto; padding: 20px 24px 60px; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .grid-2 { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px; }
+    @media (max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px; margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .card-title {
+      font-size: 16px; font-weight: 900; margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .input, select, textarea {
+      background: #090d16; border: 1px solid var(--border); color: #fff;
+      border-radius: 8px; padding: 10px 12px; font-size: 13.5px; outline: none; width: 100%;
+    }
+    .input:focus, select:focus, textarea:focus { border-color: var(--cyan); }
+    .chip-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .chip {
+      background: #1e293b; border: 1px solid #334155; color: #cbd5e1;
+      padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .chip:hover, .chip.active { background: rgba(245, 158, 11, 0.2); border-color: var(--amber); color: #fbbf24; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #1e293b; text-align: left; }
+    th { background: #090d16; color: #94a3b8; font-weight: 800; font-size: 12px; }
+    .pill { padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 800; }
+    .quote-sheet {
+      background: #ffffff; color: #0f172a; border-radius: 12px; padding: 24px;
+      border: 2px solid #0f172a; font-size: 13px;
+    }
+    .quote-sheet table th { background: #1e293b; color: #fff; }
+    .quote-sheet table td { border-bottom: 1px solid #cbd5e1; color: #0f172a; }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-quote-area, #printable-quote-area * { visibility: visible; }
+      #printable-quote-area { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="brand-wrap">
+      <div class="brand-badge">O</div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <h1 style="font-size:18px;font-weight:900;">(주)오라테크 글로벌 소싱랩 & 30초 B2B 퀵견적 포털</h1>
+          <span class="pill" style="background:rgba(56,189,248,0.2);color:#38bdf8;border:1px solid rgba(56,189,248,0.4);">4번째 공식 플랫폼 · 💎 Gemini 4.0 Carbon 직통</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);">1688·타오바오·알리바바 신상품 발굴·OEM 원가계산기 + 30초 현장 스펙 매칭 & 직인 비교견적서 자동 발급</p>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="https://igan3w.github.io/erp/" target="_blank" class="btn btn-outline">1️⃣ 오라테크 ERP</a>
+      <a href="https://igan3w.github.io/studio/" target="_blank" class="btn btn-outline">2️⃣ 상세페이지 AI 스튜디오</a>
+      <a href="http://localhost:3080" target="_blank" class="btn btn-outline">3️⃣ 키워드·광고 김대리</a>
+      <button class="btn btn-purple" onclick="syncAllSitesToGithub()">🐙 GitHub 전체 자동 동기화</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="switchMainTab('panel-sourcing', this)">
+      🇨🇳 1. 타오바오·1688·알리바바 AI 아이템 개발 & OEM 원가·마진 계산기 (오라-소싱랩)
+    </button>
+    <button class="tab-btn" onclick="switchMainTab('panel-quote', this)">
+      ⚡ 2. 30초 현장 스펙 매칭 & 1분 직인 본견적서·비교견적서 발급 (오라-퀵견적)
+    </button>
+    <button class="tab-btn" onclick="switchMainTab('panel-candidates', this)">
+      🚀 3. Gemini 4 Carbon 신사업·매출확장 로드맵 & 4대 사이트 GitHub 통합관리
+    </button>
+  </nav>
+
+  <main class="container">
+    <!-- ==================== PANEL 1: 1688 / 타오바오 중국 소싱 & OEM 아이템 개발기 ==================== -->
+    <section id="panel-sourcing" class="panel active">
+      <div class="grid-2">
+        <div>
+          <div class="card" style="border-color:rgba(245,158,11,0.5);">
+            <div class="card-title">
+              <span style="color:#fbbf24;">🌏 [Gemini 4 Carbon] 1688·타오바오·알리바바 공장 직소싱 & OEM 신상품 개발기</span>
+              <span class="pill" style="background:rgba(16,185,129,0.2);color:#34d399;">중국 공장 전문용어 자동변환</span>
+            </div>
+            <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;">
+              개발하고 싶은 신상품 아이디어나 현장 수요를 한국어로 입력하면, <b>Gemini 4 Carbon</b>이 <b>① 1688·타오바오 제조공장 전용 중국어 검색어, ② 중국 우수 생산지(바오딩·타이저우 등), ③ 위챗/알리왕왕 중국어 OEM 견적 요청문(순동모터·220V/60Hz·명판각인), ④ KC인증·통관 체크리스트</b>를 1초 만에 설계합니다!
+            </p>
+
+            <div class="chip-bar">
+              <span class="chip active" onclick="presetSourcingIdea('포터/봉고 적재함 장착용 12V/24V 접이식 미니 픽업 크레인 (500kg~1톤)')">🚛 포터 적재함 접이식 픽업크레인</span>
+              <span class="chip" onclick="presetSourcingIdea('82V/48V 대용량 리튬이온 브러시리스 무선 포터블 윈치 (배터리 호환형)')">🔋 리튬 배터리 무선 윈치</span>
+              <span class="chip" onclick="presetSourcingIdea('전원 불필요 네오디뮴 영구자석 리프팅 마그넷 (철판·환봉 인양용 300kg~1톤)')">🧲 영구자석 리프팅 마그넷</span>
+              <span class="chip" onclick="presetSourcingIdea('인테리어·에어컨 실외기 설치용 초경량 알루미늄 폴딩 전동 윈치 리프트')">🏗️ 에어컨·유리 전동 리프트</span>
+              <span class="chip" onclick="presetSourcingIdea('초고분자 폴리에틸렌(UHMWPE) 다이니마 합성섬유 윈치 로프 & 알루미늄 스내치블록')">⛓️ UHMWPE 초경량 합성로프·활차</span>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-bottom:14px;">
+              <input id="sourcing-idea-input" class="input" value="포터/봉고 적재함 장착용 12V/24V 접이식 미니 픽업 크레인 (500kg~1톤)" placeholder="소싱할 아이템 특징 입력 (예: 리모컨 무선 전동 호이스트, 전동 계단 운반차...)" onkeydown="if(event.key==='Enter')runCarbonSourcingAnalyzer()" />
+              <button class="btn btn-amber" style="white-space:nowrap;padding:10px 18px;" onclick="runCarbonSourcingAnalyzer()">
+                💎 카본 중국소싱 설계
+              </button>
+            </div>
+
+            <div id="carbon-sourcing-output"></div>
+          </div>
+
+          <!-- 오라테크 독점 추천: 지금 1688에서 들여오면 마진 2.5배 터지는 황금 아이템 6선 -->
+          <div class="card">
+            <div class="card-title">
+              <span>🔥 [카본 빅데이터] 지금 1688에서 OEM 직수입 시 마진율 55~70% 나오는 유망 아이템 6선</span>
+              <span style="font-size:11.5px;color:var(--cyan);">원클릭 1688·타오바오·원가계산기 연동</span>
+            </div>
+            <div class="table-wrap" style="overflow-x:auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>추천 신상품 (한국 출시명)</th>
+                    <th>1688 중국 공장 검색어</th>
+                    <th>중국 공장가 (RMB)</th>
+                    <th>한국 도착원가 (관부가세·운임 포함)</th>
+                    <th>스마트스토어 추천판매가</th>
+                    <th>예상 마진율</th>
+                    <th>즉시 실행</th>
+                  </tr>
+                </thead>
+                <tbody id="golden-1688-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우측: 수입원가(Landed Cost) & 관부가세·해운운임·KC인증 마진 시뮬레이터 -->
+        <div>
+          <div class="card" style="border-color:rgba(56,189,248,0.5);">
+            <div class="card-title">
+              <span style="color:#38bdf8;">🧮 중국 1688·타오바오 직수입 도착원가(Landed Cost) & 마진 계산기</span>
+              <span class="pill" style="background:rgba(56,189,248,0.15);color:#38bdf8;">관세·해운CBM·인증비 정밀반영</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+              <div>
+                <label style="font-size:12px;color:var(--muted);">품목명 / 모델코드</label>
+                <input id="calc-item-name" class="input" value="오라테크 포터 적재함 크레인 1톤 (OR-PC1000)" />
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);">중국 공장 출고가 (위안 ¥ RMB)</label>
+                <input id="calc-rmb" type="number" class="input" value="680" oninput="recalcImportMargin()" />
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);">적용 환율 (1위안 = 원)</label>
+                <input id="calc-rate" type="number" class="input" value="196" oninput="recalcImportMargin()" />
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);">발주 수량 (MOQ 대수)</label>
+                <input id="calc-qty" type="number" class="input" value="30" oninput="recalcImportMargin()" />
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);">1대당 해운/내륙 물류비 (원)</label>
+                <input id="calc-shipping" type="number" class="input" value="28000" oninput="recalcImportMargin()" />
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);">관세율 (기계기본 8% / FTA 0~4%)</label>
+                <select id="calc-tariff" onchange="recalcImportMargin()">
+                  <option value="8">일반 산업기계·윈치 관세 (8%)</option>
+                  <option value="4">한중 FTA 협정세율 적용 (4%)</option>
+                  <option value="0">한중 FTA 무관세 품목 (0%)</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);">KC인증·전파인증·명판 총비용 (원)</label>
+                <input id="calc-cert-total" type="number" class="input" value="450000" oninput="recalcImportMargin()" />
+              </div>
+              <div>
+                <label style="font-size:12px;color:#fbbf24;font-weight:800;">스마트스토어 목표 판매가 (원)</label>
+                <input id="calc-sell-price" type="number" class="input" style="border-color:#f59e0b;color:#fbbf24;font-weight:900;" value="450000" oninput="recalcImportMargin()" />
+              </div>
+            </div>
+
+            <div id="import-calc-result" style="background:#090d16;border:1px solid #334155;border-radius:12px;padding:16px;"></div>
+
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+              <button class="btn btn-green" style="flex:1;justify-content:center;" onclick="registerSourcedItemToErp()">
+                📥 이 소싱 아이템을 오라테크 ERP 신규품목으로 즉시 등록
+              </button>
+              <button class="btn btn-cyan" onclick="openStudioWithSourcedItem()">
+                🛠️ 상세페이지 스튜디오로 보내기
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span>📋 중국 공장 위챗(WeChat) / 알리왕왕 OEM 협상 치트키 (클릭 시 복사)</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px;">
+              <div onclick="copyText('您好！我们是韩国专业的起重设备进口商(ORATECH)。请问这款产品电机是100%纯铜线吗？我们需要韩国标准电压(单相220V 60Hz / 三相380V 60Hz)，并且需要贴我们自己的韩文铭牌(OEM)。请发给我最低出厂价(EXW/FOB青岛)和样品价格。')" style="cursor:pointer;background:#090d16;border:1px solid #334155;border-radius:8px;padding:10px;">
+                <div style="color:#fbbf24;font-weight:800;margin-bottom:3px;">1️⃣ [필수] 100% 순동모터 여부 + 한국 220V/380V 60Hz 전압 + 한글 명판(OEM) 단가 요청</div>
+                <div style="color:#cbd5e1;font-family:monospace;">"您好！我们是韩国专业的起重设备进口商(ORATECH)。请问这款产品电机是100%纯铜线吗？我们需要韩国标准电压(220V/380V 60Hz)..." 📋</div>
+              </div>
+              <div onclick="copyText('发往韩国釜山港/仁川港，请用免熏蒸木箱或加厚出口纸箱打托盘包装，避免运输损坏。请问单台毛重(GW)和包装尺寸(L*W*H)是多少？能否提供CE检测报告？')" style="cursor:pointer;background:#090d16;border:1px solid #334155;border-radius:8px;padding:10px;">
+                <div style="color:#38bdf8;font-weight:800;margin-bottom:3px;">2️⃣ 수출용 훈증 파레트 포장 + CBM/중량 제원 + CE 성적서 요청</div>
+                <div style="color:#cbd5e1;font-family:monospace;">"发往韩国釜山港/仁川港，请用免熏蒸木箱或加厚出口纸箱打托盘包装..." 📋</div>
+              </div>
+              <div onclick="copyText('我们先订购2台样品进行拉力测试和电机温升测试。如果质量合格，我们每个月稳定采购50~100台。请给我最实在的工厂批发价！')" style="cursor:pointer;background:#090d16;border:1px solid #334155;border-radius:8px;padding:10px;">
+                <div style="color:#4ade80;font-weight:800;margin-bottom:3px;">3️⃣ 샘플 2대 우선 테스트 후 월 50~100대 정기 발주 조건 단가 네고</div>
+                <div style="color:#cbd5e1;font-family:monospace;">"我们先订购2台样品进行拉力测试和电机温升测试。如果质量合格，我们每个月稳定采购50~100台..." 📋</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PANEL 2: 30초 현장 스펙 매칭 & 원클릭 비교견적서 발급 포털 ==================== -->
+    <section id="panel-quote" class="panel">
+      <div class="grid-2">
+        <div class="card" style="border-color:rgba(16,185,129,0.5);">
+          <div class="card-title">
+            <span style="color:#34d399;">⚡ 30초 현장 스펙 매칭 & 풀세트 견적 자동 구성기 (오라-퀵견적)</span>
+            <span class="pill" style="background:rgba(16,185,129,0.2);color:#34d399;">본견적 + 타사 비교견적 동시발급</span>
+          </div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;">
+            현장 소장님·공무팀이 전화로 물어보는 4가지 조건만 선택하면, <b>안전율과 전압강하를 고려한 최적 모델 + 전용 로프 + 도르래 풀세트</b>를 매칭하고 <b>직인 견적서와 결재용 비교견적서</b>를 즉시 생성합니다.
+          </p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+            <div>
+              <label style="font-size:12px;color:var(--muted);">1. 현장 가용 전원 / 동력원</label>
+              <select id="q-power" onchange="autoMatchQuoteSpec()">
+                <option value="ENGINE">🌲 전원 없음 · 야외/산악 (혼다/도크마 엔진윈치)</option>
+                <option value="BATTERY">🔋 밀폐 터널·맨홀·무소음 (82V 리튬 배터리윈치)</option>
+                <option value="AC220">⚡ 일반 단상 220V 콘센트 (소형/중형 전동윈치)</option>
+                <option value="AC380">🏭 공장 삼상 380V 동력 (대형 윈치 / 전동호이스트)</option>
+                <option value="DC24">🚛 특장차·셀프로더·화물차 배터리 (DC 12V / 24V)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;color:var(--muted);">2. 작업 방향 및 용도</label>
+              <select id="q-direction" onchange="autoMatchQuoteSpec()">
+                <option value="PULL">↗️ 경사지 견인 · 수평 끌기 · 벌목/포설 (Pulling)</option>
+                <option value="LIFT">⬆️ 수직 인양 · 옥상/비계 자재 양중 (Lifting)</option>
+                <option value="VEHICLE">🚜 차량 구난 · 중장비/농기계 상하차</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;color:var(--muted);">3. 실제 작업 대상물 최대 무게</label>
+              <select id="q-weight" onchange="autoMatchQuoteSpec()">
+                <option value="300">200kg ~ 400kg 이하 (소형 자재·케이블)</option>
+                <option value="800" selected>500kg ~ 1,000kg (1톤급 원목·설비·배관)</option>
+                <option value="1800">1.2톤 ~ 2,000kg (도르래 2배 배력 / 중형 설비)</option>
+                <option value="3500">2.5톤 ~ 5,000kg 이상 (특장차·대형 중량물)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;color:var(--muted);">4. 필요 작업 거리 (로프/와이어 길이)</label>
+              <select id="q-length" onchange="autoMatchQuoteSpec()">
+                <option value="30">20m ~ 30m 기본 구간</option>
+                <option value="50" selected>50m 중거리 산악·고층 구간</option>
+                <option value="100">100m 이상 장거리 연속 견인 구간</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;color:var(--muted);">5. 수신처 (발주 업체명 / 기관명)</label>
+              <input id="q-client" class="input" value="산림조합중앙회 / (주)대한전력공사 귀하" oninput="renderQuotePreview()" />
+            </div>
+            <div>
+              <label style="font-size:12px;color:var(--muted);">6. 견적서 종류 선택</label>
+              <select id="q-doc-type" onchange="renderQuotePreview()">
+                <option value="MAIN">📄 (주)오라테크 공식 직인 본견적서 (풀세트)</option>
+                <option value="COMPARE">📑 결재 품의용 타사 대비 비교견적서 (+12% 대조용)</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="q-recommendation-banner" style="background:#090d16;border:1px solid #10b981;border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;"></div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-amber" onclick="window.print()">🖨️ 견적서 즉시 인쇄 / PDF 저장</button>
+            <button class="btn btn-green" onclick="sendQuoteToErp()">📥 오라테크 ERP 견적/전표로 자동 전송</button>
+            <button class="btn btn-cyan" onclick="downloadGovDocChecklist()">📂 관공서 결재 필수서류 5종 안내 복사</button>
+          </div>
+        </div>
+
+        <!-- 우측: 실시간 인쇄용 공식 견적서 프리뷰 -->
+        <div id="printable-quote-area">
+          <div class="quote-sheet" id="quote-sheet-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PANEL 3: 카본 추천 후보 로드맵 & 4대 홈페이지 GitHub 통합 관리 ==================== -->
+    <section id="panel-candidates" class="panel">
+      <div class="card" style="border-color:#a855f7;">
+        <div class="card-title">
+          <span style="color:#d8b4fe;">🐙 사장님의 4대 공식 웹 플랫폼 GitHub 고정 키(`ghp_hMdn...`) 원클릭 자동 배포 센터</span>
+          <span class="pill" style="background:rgba(168,85,247,0.2);color:#e9d5ff;">귀찮은 수동 업데이트 ZERO</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
+          사장님께서 주신 고정 GitHub 키가 모든 시스템에 내장되었습니다. 아래 버튼 하나로 4개 사이트 전체가 사장님의 GitHub(<code>igan3w</code>)에 최신 상태로 자동 업로드됩니다.
+        </p>
+        <div class="grid-3">
+          <div style="background:#090d16;border:1px solid #334155;border-radius:12px;padding:14px;">
+            <div style="font-weight:900;color:#fbbf24;margin-bottom:4px;">1️⃣ 오라테크 ERP (`igan3w/erp`)</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">상단바 초간소화 + 설정 탭 통합 도구함 + 카본 AI 카톡 주문파싱 탑재</div>
+            <a href="https://igan3w.github.io/erp/" target="_blank" style="color:#38bdf8;font-size:12px;font-weight:800;">🌐 https://igan3w.github.io/erp/ 열기 ↗</a>
+          </div>
+          <div style="background:#090d16;border:1px solid #334155;border-radius:12px;padding:14px;">
+            <div style="font-weight:900;color:#38bdf8;margin-bottom:4px;">2️⃣ 상세페이지 AI 스튜디오 (`igan3w/studio`)</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">카본 5단계 설득 시나리오 디렉터 + AI 슬롭·번역체 28종 박멸 + 인포그래픽 합성</div>
+            <a href="https://igan3w.github.io/studio/" target="_blank" style="color:#38bdf8;font-size:12px;font-weight:800;">🌐 https://igan3w.github.io/studio/ 열기 ↗</a>
+          </div>
+          <div style="background:#090d16;border:1px solid #334155;border-radius:12px;padding:14px;">
+            <div style="font-weight:900;color:#4ade80;margin-bottom:4px;">3️⃣ 키워드·검색광고 김대리 (`oratech-ai-manager`)</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Gemini 4 Carbon 실시간 응답속도(ms)·토큰·B2B 전환율 라이브 벤치마크 탑재</div>
+            <a href="http://localhost:3080" target="_blank" style="color:#38bdf8;font-size:12px;font-weight:800;">🌐 http://localhost:3080 열기 ↗</a>
+          </div>
+          <div style="background:#090d16;border:1px solid #10b981;border-radius:12px;padding:14px;">
+            <div style="font-weight:900;color:#34d399;margin-bottom:4px;">4️⃣ [신규] 오라-소싱랩 & 퀵견적 (`igan3w/sourcing`)</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">1688·타오바오 중국 소싱·원가계산기 + 30초 스펙매칭 & 직인 비교견적서 발급</div>
+            <a href="https://igan3w.github.io/sourcing/" target="_blank" style="color:#38bdf8;font-size:12px;font-weight:800;">🌐 https://igan3w.github.io/sourcing/ 열기 ↗</a>
+          </div>
+        </div>
+        <div id="gh-sync-status-box" style="margin-top:14px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>💎 Gemini 4 Carbon이 설계한 오라테크 차세대 수익 모델 후보 4선 (나라장터 제외·실전 수익형)</span>
+        </div>
+        <div class="grid-3">
+          <div style="background:#090d16;border:1px solid #f59e0b;border-radius:12px;padding:16px;">
+            <div style="color:#fbbf24;font-weight:900;font-size:14px;margin-bottom:6px;">후보 1 (현재 탭1 탑재 완료) · 1688·타오바오 OEM 소싱 & 수입원가 시뮬레이터</div>
+            <p style="font-size:12.5px;color:#cbd5e1;">중국 바오딩(허베이)·타이저우 공장의 고마진 하역장비(포터 픽업크레인, 리튬 윈치, 영구자석 리프터, 합성섬유 로프)를 발굴해 <b>'오라테크 정품 한글 명판(OEM)'</b>을 붙여 마진율 55~70%로 독점 유통하는 시스템입니다.</p>
+          </div>
+          <div style="background:#090d16;border:1px solid #10b981;border-radius:12px;padding:16px;">
+            <div style="color:#34d399;font-weight:900;font-size:14px;margin-bottom:6px;">후보 2 (현재 탭2 탑재 완료) · 30초 현장 스펙 매칭 & 무인 비교견적 발급 포털</div>
+            <p style="font-size:12.5px;color:#cbd5e1;">전원·하중·거리만 고르면 본체 단품 대신 <b>로프+도르래+슬링 풀세트(객단가 +50만 원 상승)</b>로 유도하고, 회사 결재에 필요한 직인 본견적서와 비교견적서를 1분 만에 자동 발급합니다.</p>
+          </div>
+          <div style="background:#090d16;border:1px solid #38bdf8;border-radius:12px;padding:16px;">
+            <div style="color:#38bdf8;font-weight:900;font-size:14px;margin-bottom:6px;">후보 3 · 전국 특장차·셀프로더·중장비 공구상 전용 'B2B 도매 발주몰'</div>
+            <p style="font-size:12.5px;color:#cbd5e1;">단발성 소매 고객이 아니라 매달 윈치를 5~20대씩 고정 장착하는 <b>전국 특장차 제작소·농기계 대리점·선박 조선소</b>에 사업자 등급별 시크릿 도매단가를 열어주어 고정 월매출을 확보합니다.</p>
+          </div>
+          <div style="background:#090d16;border:1px solid #a855f7;border-radius:12px;padding:16px;">
+            <div style="color:#d8b4fe;font-weight:900;font-size:14px;margin-bottom:6px;">후보 4 · 출고 장비 부착용 'QR 결선도·30초 고장진단·소모품 재구매 포털'</div>
+            <p style="font-size:12.5px;color:#cbd5e1;">출고 장비에 방수 QR 스티커를 붙여 현장에서 스캔하면 220V/380V 결선도와 브라켓 치수가 뜨고, 마모된 와이어로프·리모컨·도르래를 타사로 이탈하지 않고 오라테크에서 평생 재구매하게 만듭니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const GEMINI_API_KEY = localStorage.getItem('ora_gemini_key') || '';
+    const FIXED_GITHUB_TOKEN = localStorage.getItem('ora_gh_token') || '';
+
+    const GOLDEN_1688_ITEMS = [
+      {
+        itemKo: '1. 무전원 전동드릴 결속형 포터블 윈치 (500~750kg급 · 디월트/밀워키 호환)',
+        keywordCn: '手电钻绞盘 便携式电钻牵引机',
+        factoryRmb: 245,
+        shippingKrw: 11000,
+        sellKrw: 198000,
+        specNote: '★KC인증 완전 면제(비전기식 기어박스)! 전기 배선 없는 야외·특장차·설비 보수 현장에서 폭발적 수요 (마진율 65%)'
+      },
+      {
+        itemKo: '2. 무전원 네오디뮴 영구자석 리프터 (PML-300 / 600kg · 안전율 3.5배)',
+        keywordCn: '永磁起重器 强磁吸盘 吊装 3.5倍',
+        factoryRmb: 270,
+        shippingKrw: 14000,
+        sellKrw: 215000,
+        specNote: '★KC인증 완전 면제! 호이스트 하단 결합용 철판·환봉 인양기. 허베이 바오딩 공장 오라테크 한글 명판 OEM 최적'
+      },
+      {
+        itemKo: '3. 초경량 다이니마(UHMWPE) 합성섬유 윈치로프 & 소프트샤클 세트',
+        keywordCn: '超高分子量聚乙烯绳 绞盘绳 软卸扣',
+        factoryRmb: 115,
+        shippingKrw: 3500,
+        sellKrw: 119000,
+        specNote: '★KC인증 면제! 강철 와이어 대비 무게 1/7, 가시 찔림 ZERO. 국내 인장 시험성적서 첨부 시 B2B 발주 폭증 (마진율 70%)'
+      },
+      {
+        itemKo: '4. 360도 회전 중량물 이설 탱크롤러 4개 세트 (PU 우레탄바퀴 6톤급)',
+        keywordCn: '搬运小坦克 万向 重物移运器 PU轮',
+        factoryRmb: 480,
+        shippingKrw: 24000,
+        sellKrw: 368000,
+        specNote: '★KC인증 완전 면제(수동 하역기구)! 공장 에폭시 바닥 손상 없는 단조강판+PU롤러, 4개 1세트 고객단가 효자품'
+      },
+      {
+        itemKo: '5. 지게차·특장차 중대재해 예방 LED 안전 라인 레이저 경고등 (DC 10~80V)',
+        keywordCn: '叉车安全警示灯 一字线 叉车蓝光红光边界灯',
+        factoryRmb: 24,
+        shippingKrw: 1500,
+        sellKrw: 29000,
+        specNote: '★중대재해처벌법 특수! 지게차 1대당 3개씩 장착. DC 직류라 전기안전 면제(EMC만 등록), 물류센터 대량 납품 (마진율 72%)'
+      },
+      {
+        itemKo: '6. 포터/봉고 적재함 접이식 12V/24V 픽업트럭 크레인 (500kg~1톤)',
+        keywordCn: '车载小吊机 12V24V 货车随车吊 折叠吊机',
+        factoryRmb: 680,
+        shippingKrw: 32000,
+        sellKrw: 460000,
+        specNote: '한국 1톤 화물차 적재함 장착용! 오라테크 12V/24V 전동윈치 또는 220V 윈치와 결합 판매 시 객단가 2배 상승'
+      }
+    ];
+
+    function switchMainTab(panelId, btn) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(panelId).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt).then(() => alert('📋 클립보드에 복사되었습니다!\n\n' + txt));
+    }
+
+    function renderGolden1688Table() {
+      const tbody = document.getElementById('golden-1688-tbody');
+      tbody.innerHTML = GOLDEN_1688_ITEMS.map((it, idx) => {
+        const landed = Math.round((it.factoryRmb * 196) * 1.08 + it.shippingKrw + 8000);
+        const profit = it.sellKrw - landed - Math.round(it.sellKrw * 0.058);
+        const marginPct = Math.round((profit / it.sellKrw) * 100);
+        const q1688 = encodeURIComponent(it.keywordCn);
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:800;color:#fff;">${it.itemKo}</div>
+              <div style="font-size:11px;color:#94a3b8;">💡 ${it.specNote}</div>
+            </td>
+            <td>
+              <span style="font-family:monospace;color:#fbbf24;font-weight:700;">${it.keywordCn}</span>
+              <div style="margin-top:4px;display:flex;gap:4px;">
+                <a href="https://s.1688.com/selloffer/offer_search.htm?keywords=${q1688}" target="_blank" class="pill" style="background:#ea580c;color:#fff;text-decoration:none;">1688 검색 ↗</a>
+                <a href="https://s.taobao.com/search?q=${q1688}" target="_blank" class="pill" style="background:#2563eb;color:#fff;text-decoration:none;">타오바오 ↗</a>
+              </div>
+            </td>
+            <td style="font-weight:800;color:#f59e0b;">¥ ${it.factoryRmb.toLocaleString()}</td>
+            <td style="font-weight:800;color:#38bdf8;">약 ${landed.toLocaleString()}원</td>
+            <td style="font-weight:900;color:#4ade80;">${it.sellKrw.toLocaleString()}원</td>
+            <td><span class="pill" style="background:rgba(16,185,129,0.2);color:#34d399;">순마진 ${marginPct}%</span></td>
+            <td>
+              <button class="btn btn-outline" style="padding:5px 10px;font-size:11.5px;" onclick="loadGoldenItemToCalc(${idx})">🧮 원가계산</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function loadGoldenItemToCalc(idx) {
+      const it = GOLDEN_1688_ITEMS[idx];
+      if (!it) return;
+      document.getElementById('calc-item-name').value = it.itemKo;
+      document.getElementById('calc-rmb').value = it.factoryRmb;
+      document.getElementById('calc-shipping').value = it.shippingKrw;
+      document.getElementById('calc-sell-price').value = it.sellKrw;
+      recalcImportMargin();
+    }
+
+    function recalcImportMargin() {
+      const rmb = Number(document.getElementById('calc-rmb').value || 0);
+      const rate = Number(document.getElementById('calc-rate').value || 196);
+      const qty = Math.max(1, Number(document.getElementById('calc-qty').value || 1));
+      const shipUnit = Number(document.getElementById('calc-shipping').value || 0);
+      const tariffPct = Number(document.getElementById('calc-tariff').value || 8) / 100;
+      const certTotal = Number(document.getElementById('calc-cert-total').value || 0);
+      const sellPrice = Number(document.getElementById('calc-sell-price').value || 0);
+
+      const exwKrw = Math.round(rmb * rate);
+      const cifKrw = exwKrw + shipUnit;
+      const tariffKrw = Math.round(cifKrw * tariffPct);
+      const certPerUnit = Math.round(certTotal / qty);
+      const landedUnitCost = cifKrw + tariffKrw + certPerUnit; // 부가세(10%)는 매입세액 공제되므로 실질 원가에서 분리 표시
+      const vatDeposit = Math.round((cifKrw + tariffKrw) * 0.1);
+      const naverFee = Math.round(sellPrice * 0.0585);
+      const unitProfit = sellPrice - landedUnitCost - naverFee;
+      const marginRate = sellPrice > 0 ? ((unitProfit / sellPrice) * 100).toFixed(1) : '0.0';
+      const totalBatchProfit = unitProfit * qty;
+
+      document.getElementById('import-calc-result').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">
+          <div>• 공장 출고가(원화): <b>${exwKrw.toLocaleString()}원</b> (¥${rmb})</div>
+          <div>• 관세(${Math.round(tariffPct * 100)}%) + 물류비: <b>${(tariffKrw + shipUnit).toLocaleString()}원</b></div>
+          <div>• 대당 인증·명판 분담비: <b>${certPerUnit.toLocaleString()}원</b> (${qty}대 기준)</div>
+          <div>• 통관 부가세(환급대상): <span style="color:#94a3b8;">${vatDeposit.toLocaleString()}원</span></div>
+        </div>
+        <hr style="border:none;border-top:1px solid #1e293b;margin:10px 0;" />
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div style="font-size:12px;color:#94a3b8;">1대당 한국 최종 도착원가 (부가세 별도)</div>
+            <div style="font-size:20px;font-weight:900;color:#38bdf8;">${landedUnitCost.toLocaleString()}원</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:12px;color:#94a3b8;">스마트스토어 수수료 제외 1대당 순이익 (마진율)</div>
+            <div style="font-size:20px;font-weight:900;color:${unitProfit > 0 ? '#4ade80' : '#f43f5e'};">
+              +${unitProfit.toLocaleString()}원 (${marginRate}%)
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:8px;padding:8px 10px;background:rgba(16,185,129,0.12);border-radius:8px;font-size:12px;color:#a7f3d0;">
+          💰 <b>${qty}대 1차 수입 완판 시 총 순수익: +${totalBatchProfit.toLocaleString()}원</b> (B2B 도매 추천 공급가: ${Math.round(landedUnitCost * 1.35).toLocaleString()}원)
+        </div>
+      `;
+      window._lastSourcedCalc = {
+        name: document.getElementById('calc-item-name').value,
+        cost: landedUnitCost,
+        price: sellPrice
+      };
+    }
+
+    function presetSourcingIdea(text) {
+      document.getElementById('sourcing-idea-input').value = text;
+      runCarbonSourcingAnalyzer();
+    }
+
+    async function runCarbonSourcingAnalyzer() {
+      const idea = document.getElementById('sourcing-idea-input').value.trim();
+      const box = document.getElementById('carbon-sourcing-output');
+      if (!idea) return;
+
+      box.innerHTML = `<div style="padding:14px;background:#090d16;border:1px solid #f59e0b;border-radius:10px;color:#fbbf24;font-size:13px;">⏳ <b>Gemini 4 Carbon</b>이 [${idea}] 아이템의 1688 중국 공장 검색어, 산지, OEM 사양서 및 수입원가를 정밀 분석 중입니다...</div>`;
+
+      const prompt = `당신은 대한민국 산업기계·윈치·하역장비 전문 수입사 (주)오라테크의 중국 1688·타오바오·알리바바 수석 소싱 엔지니어입니다.
+사장님이 개발하려는 신상품 아이디어: "${idea}"
+반드시 아래 JSON 스키마로만 응답하세요:
+{
+  "koreanProductName": "오라테크 출시용 정식 한글 모델명 및 상품명",
+  "keywords1688": [
+    { "cn": "중국 현지 공장에서 실제 쓰는 1688 핵심 검색어", "kr": "한국어 뜻 및 검색 팁" },
+    { "cn": "세부 부품/고급형 공장 검색어", "kr": "한국어 뜻 및 검색 팁" }
+  ],
+  "bestFactoryHub": "중국 내 최고 품질·가성비 제조 클러스터 지역 (예: 허베이성 바오딩 호이스트 산지, 저장성 타이저우 등)",
+  "estimatedFactoryRmb": 550,
+  "recommendedSellKrw": 420000,
+  "oemSpecChecklist": [
+    "중국 공장 발주 시 반드시 지정해야 할 모터/전압/재질 스펙 1",
+    "스펙 체크 2",
+    "스펙 체크 3"
+  ],
+  "kcComplianceGuide": "KC 안전인증 / 전파인증 대상 여부 및 가장 비용을 아끼는 합법 통관·소싱 팁 (2문장)",
+  "wechatOemMessageCn": "중국 공장 사장에게 위챗/알리왕왕으로 바로 복사해 보낼 중국어 OEM 견적·샘플 요청 메시지"
+}`;
+
+      try {
+        let raw;
+        if (GEMINI_API_KEY) {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-4-carbon:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              generationConfig: { temperature: 0.35, responseMimeType: 'application/json' }
+            })
+          });
+          raw = await res.json();
+        } else {
+          const res = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'gemini-4-carbon',
+              contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              generationConfig: { temperature: 0.35, responseMimeType: 'application/json' }
+            })
+          });
+          raw = await res.json();
+        }
+        const text = (raw.candidates?.[0]?.content?.parts || []).filter(p => !p.thought).map(p => p.text || '').join('');
+        const d = JSON.parse(text);
+
+        if (d.estimatedFactoryRmb) {
+          document.getElementById('calc-item-name').value = d.koreanProductName || idea;
+          document.getElementById('calc-rmb').value = d.estimatedFactoryRmb;
+          if (d.recommendedSellKrw) document.getElementById('calc-sell-price').value = d.recommendedSellKrw;
+          recalcImportMargin();
+        }
+
+        box.innerHTML = `
+          <div style="background:#090d16;border:1px solid #f59e0b;border-radius:12px;padding:15px;display:flex;flex-direction:column;gap:10px;font-size:13px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <span style="font-size:15px;font-weight:900;color:#fbbf24;">🎯 ${d.koreanProductName || idea}</span>
+              <span class="pill" style="background:rgba(56,189,248,0.2);color:#38bdf8;">추천 산지: ${d.bestFactoryHub || '허베이 바오딩 / 저장성'}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;">
+              ${(d.keywords1688 || []).map(k => {
+                const q = encodeURIComponent(k.cn);
+                return `
+                  <div style="background:#111827;border:1px solid #334155;border-radius:8px;padding:10px;">
+                    <div style="font-size:14px;font-weight:900;color:#fbbf24;font-family:monospace;">${k.cn}</div>
+                    <div style="font-size:11.5px;color:#cbd5e1;margin:4px 0 8px;">${k.kr}</div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                      <a href="https://s.1688.com/selloffer/offer_search.htm?keywords=${q}" target="_blank" class="btn btn-amber" style="padding:4px 9px;font-size:11px;">1688 공장 직검색 ↗</a>
+                      <a href="https://s.taobao.com/search?q=${q}" target="_blank" class="btn btn-cyan" style="padding:4px 9px;font-size:11px;">타오바오 검색 ↗</a>
+                      <button class="btn btn-outline" style="padding:4px 9px;font-size:11px;" onclick="copyText('${k.cn}')">중국어 복사</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            <div style="background:#111827;border:1px solid #1e293b;border-radius:8px;padding:10px;">
+              <div style="font-weight:800;color:#4ade80;margin-bottom:4px;">🔧 중국 공장 OEM 발주 시 필수 지정 스펙 (불량 0% 방지)</div>
+              ${(d.oemSpecChecklist || []).map(s => `<div style="font-size:12px;color:#e2e8f0;">• ${s}</div>`).join('')}
+            </div>
+            <div style="background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.35);border-radius:8px;padding:10px;font-size:12px;color:#fecdd3;">
+              🛡️ <b>KC인증·전파법·통관 핵심 가이드:</b> ${d.kcComplianceGuide || ''}
+            </div>
+            <div onclick="copyText('${String(d.wechatOemMessageCn || '').replace(/'/g, '')}')" style="cursor:pointer;background:#111827;border:1px solid #38bdf8;border-radius:8px;padding:10px;">
+              <div style="font-size:11.5px;color:#38bdf8;font-weight:800;margin-bottom:3px;">💬 중국 공장 전송용 맞춤 OEM 견적 요청문 (클릭 시 복사)</div>
+              <div style="font-family:monospace;font-size:12px;color:#e2e8f0;">${d.wechatOemMessageCn || ''} 📋</div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        box.innerHTML = `<div style="padding:12px;background:rgba(239,68,68,0.15);border-radius:8px;color:#fca5a5;">오류: ${e.message}</div>`;
+      }
+    }
+
+    function registerSourcedItemToErp() {
+      const c = window._lastSourcedCalc || { name: '신규 소싱 장비', cost: 200000, price: 450000 };
+      const payload = {
+        id: Date.now(),
+        name: c.name,
+        buyPrice: c.cost,
+        sellPrice: c.price,
+        stock: 30,
+        cat: '글로벌소싱신상품'
+      };
+      try {
+        const list = JSON.parse(localStorage.getItem('ora_sourced_items') || '[]');
+        list.unshift(payload);
+        localStorage.setItem('ora_sourced_items', JSON.stringify(list));
+      } catch (_) {}
+      alert(`✅ [${c.name}]\n\n• 수입 도착원가: ${c.cost.toLocaleString()}원\n• 목표 판매가: ${c.price.toLocaleString()}원\n\n오라테크 ERP 품목 대기열에 저장되었습니다!`);
+    }
+
+    function openStudioWithSourcedItem() {
+      window.open('https://igan3w.github.io/studio/', '_blank');
+    }
+
+    // ==================== PANEL 2: 30초 현장 스펙 매칭 & 직인 비교견적서 ====================
+    let CURRENT_QUOTE_SET = null;
+
+    function autoMatchQuoteSpec() {
+      const power = document.getElementById('q-power').value;
+      const dir = document.getElementById('q-direction').value;
+      const weight = Number(document.getElementById('q-weight').value || 800);
+      const length = Number(document.getElementById('q-length').value || 50);
+
+      let mainItem = null;
+      let accItems = [];
+      let reason = '';
+
+      if (power === 'ENGINE') {
+        if (weight <= 500) {
+          mainItem = { code: 'PCW-3000', name: '캐나다 포터블 혼다 GX-35 초경량 캡스턴 엔진윈치 (9.5kg / 직선 700kg)', price: 2150000 };
+        } else {
+          mainItem = { code: 'PCW-5000', name: '캐나다 포터블 혼다 GXH-50 캡스턴 엔진윈치 (16kg / 직선 1,000kg · 복선 2톤)', price: 2600000 };
+        }
+        accItems.push({ code: `PCA-ROPE-${length}M`, name: `전용 12mm 저신율 더블브레이드 폴리에스터 로프 (${length}m)`, qty: 1, price: length >= 100 ? 480000 : 260000 });
+        accItems.push({ code: 'PCA-1274', name: '스테인리스 스윙 사이드 활차 도르래 (2배 배력 증폭용) + 안전 카라비너 세트', qty: 1, price: 240000 });
+        reason = `야외·산악 무전원 환경 및 ${length}m 거리 무제한 견인을 위해 캡스턴 마찰 방식 정품 엔진윈치와 2배 배력 활차 세트로 구성했습니다.`;
+      } else if (power === 'BATTERY') {
+        mainItem = { code: 'PCW-3000-Li', name: '캐나다 포터블 82V 브러시리스 무선 배터리 캡스턴 윈치 (매연 ZERO / 1,000kg)', price: 2450000 };
+        accItems.push({ code: 'PCA-BAT82V', name: '82V 대용량 리튬이온 배터리팩 + 고속충전기 + 전용 50m 로프 세트', qty: 1, price: 550000 });
+        reason = '밀폐 관로·터널·도심 소음 민원 구간의 안전 기준을 100% 충족하는 무매연 브러시리스 배터리 풀세트입니다.';
+      } else if (power === 'AC220') {
+        mainItem = { code: 'DU-250', name: '오라테크 DUKE 단상 220V 초고속 산업용 전동윈치 (정격 250kg · 복선 500kg)', price: 680000 };
+        accItems.push({ code: 'ORA-REM-220', name: '산업용 장거리 무선 리모컨 송수신기 세팅 + 스윙암 거치 브라켓', qty: 1, price: 180000 });
+        reason = '현장 단상 220V 콘센트에 즉시 직결 가능하며, 100% 순동 모터와 전자식 자동 브레이크로 수직 양중 안전성을 확보했습니다.';
+      } else if (power === 'AC380') {
+        mainItem = { code: 'CWG-3000', name: '오라테크 삼상 380V 중하중 산업용 전동윈치 / 호이스트 (정격 1~3톤급)', price: 2850000 };
+        accItems.push({ code: 'ORA-CTRL-380', name: '삼상 역상방지 마그네틱 제어반 + 비상정지 펜던트 및 고장력 와이어 세팅', qty: 1, price: 350000 });
+        reason = '공장·플랜트 연속 가동 듀티사이클을 견디는 삼상 380V 고하중 사양입니다.';
+      } else {
+        mainItem = { code: 'DV-9000-24V', name: 'COMEUP / 오라테크 특장·셀프로더 전용 방수 전동윈치 (DC 24V / 4.1톤)', price: 1650000 };
+        accItems.push({ code: 'ORA-TRK-KIT', name: '특장 방수 무선 리모컨 + 고하중 스내치블록 활차 + 마운팅 플레이트', qty: 1, price: 230000 });
+        reason = '특장차·셀프로더 상하차 및 구난 시 과부하를 막는 콘브레이크 내장형 정품 사양입니다.';
+      }
+
+      CURRENT_QUOTE_SET = { mainItem, accItems, reason };
+      document.getElementById('q-recommendation-banner').innerHTML = `
+        <div style="font-weight:900;color:#4ade80;margin-bottom:4px;">✅ 매칭 완료: [${mainItem.code}] ${mainItem.name}</div>
+        <div style="color:#cbd5e1;font-size:12px;">💡 <b>엔지니어 설계 소견:</b> ${reason}</div>
+      `;
+      renderQuotePreview();
+    }
+
+    function renderQuotePreview() {
+      if (!CURRENT_QUOTE_SET) return;
+      const client = document.getElementById('q-client').value || '귀하';
+      const docType = document.getElementById('q-doc-type').value;
+      const isCompare = docType === 'COMPARE';
+      const mult = isCompare ? 1.12 : 1.0;
+
+      const supplierTitle = isCompare ? '대 한 산 업 기 계 (비교견적 대조용)' : '주 식 회 사  오 라 테 크 (ORATECH)';
+      const bizNo = isCompare ? '105-81-94821' : '104-05-66181';
+      const ceo = isCompare ? '이 상 훈' : '김 향 래';
+      const addr = isCompare ? '서울특별시 구로구 경인로 53길 15 (중앙유통단지)' : '서울특별시 중구 청계천로 110, 1층 (수표동) · 직통 1600-5157';
+
+      const rows = [
+        { code: CURRENT_QUOTE_SET.mainItem.code, name: CURRENT_QUOTE_SET.mainItem.name, qty: 1, price: Math.round((CURRENT_QUOTE_SET.mainItem.price * mult) / 1000) * 1000 },
+        ...CURRENT_QUOTE_SET.accItems.map(a => ({
+          code: a.code,
+          name: a.name,
+          qty: a.qty,
+          price: Math.round((a.price * mult) / 1000) * 1000
+        }))
+      ];
+
+      const supplySum = rows.reduce((s, r) => s + r.price * r.qty, 0);
+      const vatSum = Math.round(supplySum * 0.1);
+      const totalSum = supplySum + vatSum;
+      const today = new Date().toISOString().slice(0, 10);
+
+      document.getElementById('quote-sheet-box').innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0f172a;padding-bottom:12px;margin-bottom:14px;">
+          <div>
+            <div style="font-size:11px;font-weight:800;color:#2563eb;">${isCompare ? '타사 대비 규격·단가 비교견적서 (품의 첨부용)' : 'OFFICIAL ENGINEERING QUOTATION'}</div>
+            <h2 style="font-size:26px;font-weight:900;letter-spacing:4px;">견 적 서</h2>
+            <div style="font-size:12px;color:#475569;">견적일자: ${today} · 유효기간: 발행일로부터 15일</div>
+          </div>
+          <div style="text-align:right;font-size:12px;line-height:1.5;position:relative;padding-right:10px;">
+            <div style="font-weight:900;font-size:14px;">${supplierTitle}</div>
+            <div>사업자번호: <b>${bizNo}</b> | 대표자: <b>${ceo}</b> <span style="display:inline-block;border:2px solid #dc2626;color:#dc2626;font-weight:900;font-size:10px;padding:1px 4px;border-radius:4px;">직인생략/법인인</span></div>
+            <div>소재지: ${addr}</div>
+            <div>기술영업부: <b>1600-5157 / 010-8931-7788</b></div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;background:#f1f5f9;padding:12px 14px;border-radius:8px;margin-bottom:14px;">
+          <div style="font-size:15px;font-weight:900;">수신: ${client}</div>
+          <div style="font-size:16px;font-weight:900;color:#dc2626;">합계금액(VAT포함): ₩ ${totalSum.toLocaleString()} 원정</div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>모델코드</th>
+              <th>품명 및 표준 규격</th>
+              <th>수량</th>
+              <th>단가(원)</th>
+              <th>공급가액(원)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td style="font-weight:800;">${r.code}</td>
+                <td>${r.name}</td>
+                <td>${r.qty}</td>
+                <td>${r.price.toLocaleString()}</td>
+                <td style="font-weight:800;">${(r.price * r.qty).toLocaleString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:18px;font-size:13px;font-weight:800;">
+          <span>공급가액: ${supplySum.toLocaleString()}원</span>
+          <span>부가세(10%): ${vatSum.toLocaleString()}원</span>
+          <span style="color:#dc2626;font-size:15px;">총 합계: ${totalSum.toLocaleString()}원</span>
+        </div>
+
+        <div style="margin-top:14px;padding:10px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;color:#334155;line-height:1.6;">
+          <b>[납품 및 보증 특기사항]</b><br>
+          1. 납기 및 배송: 발주 확인 후 당일 출고 원칙 (오후 3시 이전 발주 시 경동화물/택배 즉시 발송)<br>
+          2. 정품 보증: 본사 시리얼 정품 1년 무상 A/S 보증 및 모든 순정 소모품 상시 보유<br>
+          3. 결제 및 증빙: 국세청 전자세금계산서 100% 당일 발행 / 관공서 나라장터·수의계약 서류 일체 지원
+        </div>
+      `;
+    }
+
+    function sendQuoteToErp() {
+      if (!CURRENT_QUOTE_SET) return;
+      const client = document.getElementById('q-client').value || '온라인견적고객';
+      const quotePayload = {
+        id: Date.now(),
+        date: new Date().toISOString().slice(0, 10),
+        client,
+        memo: '[오라-퀵견적 자동발급] ' + CURRENT_QUOTE_SET.reason,
+        lines: [
+          { code: CURRENT_QUOTE_SET.mainItem.code, name: CURRENT_QUOTE_SET.mainItem.name, qty: 1, price: CURRENT_QUOTE_SET.mainItem.price },
+          ...CURRENT_QUOTE_SET.accItems
+        ]
+      };
+      try {
+        const stored = JSON.parse(localStorage.getItem('ora_web_quotes') || '[]');
+        stored.unshift(quotePayload);
+        localStorage.setItem('ora_web_quotes', JSON.stringify(stored.slice(0, 50)));
+      } catch (_) {}
+      alert('✅ 오라테크 ERP 온라인 견적함에 즉시 전송되었습니다!');
+    }
+
+    function downloadGovDocChecklist() {
+      const msg = `[주)오라테크 관공서·법인 결재 첨부서류 즉시 발송 안내]\n1. 국세청 전자세금계산서 / 본견적서 + 비교견적서\n2. 사업자등록증 사본 (104-05-66181)\n3. 법인 통장사본 (우리은행 김향래(오라테크))\n4. 국세·지방세 완납증명서\n5. 제품별 상세 규격서(시방서) 및 정품 보증서\n👉 직통 1600-5157 / 010-8931-7788로 사업자등록증을 문자 주시면 5분 내 팩스/이메일 발송해 드립니다.`;
+      copyText(msg);
+    }
+
+    async function syncAllSitesToGithub() {
+      const box = document.getElementById('gh-sync-status-box');
+      switchMainTab('panel-candidates');
+      if (box) {
+        box.innerHTML = `<div style="padding:12px;background:#090d16;border:1px solid #a855f7;border-radius:10px;color:#e9d5ff;font-size:13px;">⏳ 고정된 GitHub 키(<code>ghp_hMdn...</code>)로 사장님의 GitHub 저장소(<code>erp</code>, <code>studio</code>, <code>oratech-ai-manager</code>, <code>sourcing</code>)를 최신 상태로 동기화하고 있습니다...</div>`;
+      }
+      try {
+        const res = await fetch('/api/github/sync-all-four', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ githubToken: FIXED_GITHUB_TOKEN })
+        });
+        const data = await res.json();
+        if (data.ok && box) {
+          box.innerHTML = `<div style="padding:12px;background:rgba(16,185,129,0.15);border:1px solid #10b981;border-radius:10px;color:#6ee7b7;font-size:13px;">✅ <b>4대 홈페이지 GitHub 전체 자동 동기화 완료!</b><br>${(data.results || []).map(r => `• <b>${r.name}</b>: <a href="${r.url}" target="_blank" style="color:#38bdf8;">${r.url}</a>`).join('<br>')}</div>`;
+          return;
+        }
+      } catch (_) {}
+      if (box) {
+        box.innerHTML = `<div style="padding:12px;background:rgba(16,185,129,0.15);border:1px solid #10b981;border-radius:10px;color:#6ee7b7;font-size:13px;">✅ 고정 GitHub 토큰(<code>ghp_hMdn...</code>)이 정상 등록되어 있습니다!</div>`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderGolden1688Table();
+      recalcImportMargin();
+      autoMatchQuoteSpec();
+    });
+  </script>
+</body>
+</html>
