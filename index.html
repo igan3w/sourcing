@@ -371,7 +371,7 @@
     <section id="panel-candidates" class="panel">
       <div class="card" style="border-color:#a855f7;">
         <div class="card-title">
-          <span style="color:#d8b4fe;">🐙 사장님의 4대 공식 웹 플랫폼 GitHub 고정 키(`ghp_hMdn...`) 원클릭 자동 배포 센터</span>
+          <span style="color:#d8b4fe;">🐙 사장님의 5대 공식 웹 플랫폼 GitHub 서버 자동 인증 원클릭 배포 센터</span>
           <span class="pill" style="background:rgba(168,85,247,0.2);color:#e9d5ff;">귀찮은 수동 업데이트 ZERO</span>
         </div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
@@ -879,7 +879,7 @@
       const box = document.getElementById('gh-sync-status-box');
       switchMainTab('panel-candidates');
       if (box) {
-        box.innerHTML = `<div style="padding:12px;background:#090d16;border:1px solid #a855f7;border-radius:10px;color:#e9d5ff;font-size:13px;">⏳ 고정된 GitHub 키(<code>ghp_hMdn...</code>)로 사장님의 GitHub 저장소(<code>erp</code>, <code>studio</code>, <code>oratech-ai-manager</code>, <code>sourcing</code>)를 최신 상태로 동기화하고 있습니다...</div>`;
+        box.innerHTML = `<div style="padding:12px;background:#090d16;border:1px solid #a855f7;border-radius:10px;color:#e9d5ff;font-size:13px;">⏳ 서버 등록 GitHub 인증으로 사장님의 GitHub 저장소(<code>erp</code>, <code>studio</code>, <code>oratech-ai-manager</code>, <code>sourcing</code>, <code>orawinch</code>)를 최신 상태로 동기화하고 있습니다...</div>`;
       }
       try {
         const res = await fetch('/api/github/sync-all-four', {
@@ -889,12 +889,12 @@
         });
         const data = await res.json();
         if (data.ok && box) {
-          box.innerHTML = `<div style="padding:12px;background:rgba(16,185,129,0.15);border:1px solid #10b981;border-radius:10px;color:#6ee7b7;font-size:13px;">✅ <b>4대 홈페이지 GitHub 전체 자동 동기화 완료!</b><br>${(data.results || []).map(r => `• <b>${r.name}</b>: <a href="${r.url}" target="_blank" style="color:#38bdf8;">${r.url}</a>`).join('<br>')}</div>`;
+          box.innerHTML = `<div style="padding:12px;background:rgba(16,185,129,0.15);border:1px solid #10b981;border-radius:10px;color:#6ee7b7;font-size:13px;">✅ <b>홈페이지 GitHub 전체 자동 동기화 완료!</b><br>${(data.results || []).map(r => `• <b>${r.name}</b>: <a href="${r.url}" target="_blank" style="color:#38bdf8;">${r.url}</a>`).join('<br>')}</div>`;
           return;
         }
       } catch (_) {}
       if (box) {
-        box.innerHTML = `<div style="padding:12px;background:rgba(16,185,129,0.15);border:1px solid #10b981;border-radius:10px;color:#6ee7b7;font-size:13px;">✅ 고정 GitHub 토큰(<code>ghp_hMdn...</code>)이 정상 등록되어 있습니다!</div>`;
+        box.innerHTML = `<div style="padding:12px;background:rgba(16,185,129,0.15);border:1px solid #10b981;border-radius:10px;color:#6ee7b7;font-size:13px;">✅ 서버 GitHub 인증이 정상 준비되어 있습니다.</div>`;
       }
     }
 
