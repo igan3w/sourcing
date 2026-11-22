@@ -2,7 +2,17 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- ORA_PWA_META_START -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="1688 소싱랩" />
+  <meta name="theme-color" content="#1e293b" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <!-- ORA_PWA_META_END -->
   <title>(주)오라테크 오라-소싱랩 &amp; B2B 퀵견적 포털 v5.0 (Gemini 4 Carbon 탑재)</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <style>
@@ -135,10 +145,12 @@
     .container { max-width: 1460px; margin: 0 auto; padding: 20px 24px 64px; }
     .panel { display: none; }
     .panel.active { display: block; }
-    .grid-2 { display: grid; grid-template-columns: 1.12fr 0.88fr; gap: 18px; align-items: start; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr); gap: 18px; align-items: start; }
+    .grid-2 > * { min-width: 0; max-width: 100%; }
+    .card { min-width: 0; max-width: 100%; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
     .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 1024px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } }
 
     .card {
       background: var(--bg-card); border: 1px solid var(--border);
@@ -212,11 +224,14 @@
     @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     @media (max-width: 768px) {
+      html, body { max-width: 100vw; overflow-x: hidden; }
       .eco-bar { padding: 6px 12px; }
       .top-bar { padding: 12px 14px; position: static; }
       .tabs { padding: 10px 12px; }
       .container { padding: 14px 12px 48px; }
       .card { padding: 14px; }
+      .sourcing-idea-row { flex-direction: column; }
+      .sourcing-idea-row > button { width: 100%; justify-content: center; }
       .form-grid-2 { grid-template-columns: 1fr; }
       .quote-line-row { grid-template-columns: 1fr 1fr; }
       .quote-sheet { padding: 14px; font-size: 12px; }
@@ -246,6 +261,7 @@
       <a href="https://igan3w.github.io/notes/" data-local="/notes" target="_blank" class="eco-pill">📝 노션+ 데일리</a>
     </div>
     <div class="eco-group">
+      <button type="button" id="oraPwaInstallBtn" class="eco-pill" style="border-color:#fbbf24;color:#fde68a;" onclick="window.__oraPwaOpenModal()">📲 앱 설치</button>
       <button type="button" class="eco-pill" id="ecoKeyBtn" onclick="openKeySettingsModal()" style="border-color:#38bdf8;color:#bae6fd;">🔑 Gemini 키 설정</button>
     </div>
   </div>
@@ -301,7 +317,7 @@
               <span class="chip" onclick="presetSourcingIdea('초고분자 폴리에틸렌(UHMWPE) 다이니마 합성섬유 윈치 로프 & 알루미늄 스내치블록', this)">⛓️ UHMWPE 초경량 합성로프·활차</span>
             </div>
 
-            <div style="display:flex;gap:8px;margin-bottom:14px;">
+            <div class="sourcing-idea-row" style="display:flex;gap:8px;margin-bottom:14px;">
               <input id="sourcing-idea-input" class="input" value="포터/봉고 적재함 장착용 12V/24V 접이식 미니 픽업 크레인 (500kg~1톤)" placeholder="소싱할 아이템 특징 입력 (예: 리모컨 무선 전동 호이스트, 전동 계단 운반차...)" onkeydown="if(event.key==='Enter')runCarbonSourcingAnalyzer()" />
               <button type="button" class="btn btn-amber" style="white-space:nowrap;padding:10px 18px;" onclick="runCarbonSourcingAnalyzer()">
                 💎 카본 중국소싱 설계
@@ -1757,5 +1773,134 @@
       autoMatchQuoteSpec();
     });
   </script>
+<!-- ORA_PWA_HELPER_START -->
+  <style id="oraPwaStyle">
+    #oraPwaModalBg {
+      position: fixed; inset: 0; z-index: 9998; background: rgba(9, 17, 31, 0.72);
+      backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    #oraPwaModalBg.open { display: flex; }
+    #oraPwaModalCard {
+      width: 100%; max-width: 420px; background: #ffffff; color: #0f172a; border-radius: 18px;
+      padding: 20px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42); font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      max-height: 90dvh; overflow-y: auto; line-height: 1.5;
+    }
+    @media (max-width: 640px) {
+      #oraPwaModalBg { align-items: flex-end; padding: 0; }
+      #oraPwaModalCard { border-radius: 20px 20px 0 0; max-width: 100%; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+    }
+  </style>
+  <div id="oraPwaModalBg" onclick="if(event.target===this) window.__oraPwaCloseModal()">
+    <div id="oraPwaModalCard" role="dialog" aria-modal="true" aria-label="웹앱 설치 안내">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <img id="oraPwaModalIcon" src="./icon-192.png" alt="1688 소싱랩" style="width:56px;height:56px;border-radius:14px;flex-shrink:0;box-shadow:0 6px 16px rgba(0,0,0,0.2);background:#0f172a;" />
+        <div style="min-width:0;flex:1;">
+          <div style="font-size:11px;font-weight:800;color:#2563eb;letter-spacing:0.04em;">MOBILE WEB APP (PWA)</div>
+          <div style="font-size:17px;font-weight:800;color:#0f172a;">1688 소싱랩</div>
+          <div style="font-size:12px;color:#64748b;">오라-소싱랩 & B2B 퀵견적 포털</div>
+        </div>
+        <button type="button" onclick="window.__oraPwaCloseModal()" style="border:none;background:#f1f5f9;color:#475569;width:32px;height:32px;border-radius:999px;font-size:15px;font-weight:800;cursor:pointer;flex-shrink:0;">✕</button>
+      </div>
+      <div id="oraPwaNativeBtnWrap" style="display:none;margin-bottom:12px;">
+        <button type="button" onclick="window.__oraPwaTriggerNativePrompt()" style="width:100%;padding:12px 14px;border:none;border-radius:12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px;font-weight:800;cursor:pointer;">📲 지금 바로 앱으로 설치하기</button>
+      </div>
+      <div id="oraPwaHttpsNotice" style="display:none;background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#78350f;">
+        <b>💡 폰 설치 안내:</b> 현재 로컬 파일(<code>file://</code>) 또는 비보안 주소로 열려 있습니다. 스마트폰에서는 아래 공식 HTTPS 주소를 열면 앱으로 설치됩니다!<br>
+        <div style="display:flex;gap:6px;margin-top:6px;align-items:center;">
+          <input id="oraPwaHttpsInput" type="text" readonly value="https://igan3w.github.io/sourcing/" style="flex:1;min-width:0;padding:6px 8px;border:1px solid #d97706;border-radius:6px;font-size:11.5px;background:#fff;color:#0f172a;font-family:monospace;" />
+          <button type="button" onclick="window.__oraPwaCopyUrl()" style="padding:6px 10px;border:none;border-radius:6px;background:#d97706;color:#fff;font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;">주소복사</button>
+        </div>
+      </div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 13px;font-size:12.5px;color:#334155;display:grid;gap:9px;">
+        <div><b>🍎 아이폰 · 아이패드 (Safari):</b><br>하단 가운데 <b>공유 버튼 [□↑]</b> → 아래로 내려 <b>[홈 화면에 추가] → [추가]</b></div>
+        <div style="border-top:1px dashed #cbd5e1;padding-top:8px;"><b>🤖 갤럭시 · 안드로이드 (Chrome / 삼성인터넷):</b><br>브라우저 <b>[⋮ / ☰ 메뉴]</b> → <b>[앱 설치]</b> 또는 <b>[현재 페이지 추가 → 홈 화면]</b></div>
+        <div style="border-top:1px dashed #cbd5e1;padding-top:8px;font-size:11.5px;color:#64748b;">※ 카톡 링크로 열었다면 <b>[⋮ / ⋯ → 다른 브라우저로 열기]</b> 후 설치해 주세요.</div>
+      </div>
+      <a id="oraPwaHubLink" href="https://igan3w.github.io/apps/" target="_blank" style="display:block;text-align:center;margin-top:8px;padding:10px 12px;border-radius:10px;border:1px solid #cbd5e1;background:#f8fafc;color:#1e293b;font-size:12.5px;font-weight:700;text-decoration:none;">📱 7개 전체 웹앱 통합 설치 허브 열기 ↗</a>
+    </div>
+  </div>
+  <script id="oraPwaScript">
+    (function() {
+      const APP_KEY = 'sourcing';
+      const OFFICIAL_HTTPS_URL = 'https://igan3w.github.io/sourcing/';
+      const IS_STANDALONE = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+      const IS_SECURE_SW = (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+
+      if (IS_STANDALONE) {
+        document.documentElement.classList.add('ora-pwa-standalone');
+        const pill = document.getElementById('oraPwaInstallBtn');
+        if (pill) pill.style.display = 'none';
+      }
+
+      if ('serviceWorker' in navigator && IS_SECURE_SW) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function() {});
+        });
+      }
+
+      // Keep server-hosted 7-app launcher links pointed cleanly when opened on Railway/localhost
+      const isSrv = (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname.endsWith('.up.railway.app'));
+      const hubEl = document.getElementById('oraPwaHubLink');
+      if (hubEl && isSrv) hubEl.href = '/apps/';
+      const iconEl = document.getElementById('oraPwaModalIcon');
+      if (iconEl) {
+        iconEl.onerror = function() {
+          this.onerror = null;
+          this.src = isSrv ? '/pwa/' + APP_KEY + '/icon-192.png' : ('https://naver-store-ai-manager-production.up.railway.app/pwa/' + APP_KEY + '/icon-192.png');
+        };
+      }
+
+      window.__oraDeferredPwaPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.__oraDeferredPwaPrompt = e;
+        const wrap = document.getElementById('oraPwaNativeBtnWrap');
+        if (wrap) wrap.style.display = 'block';
+        const pill = document.getElementById('oraPwaInstallBtn');
+        if (pill && !IS_STANDALONE) {
+          pill.style.display = '';
+          pill.setAttribute('data-pwa-ready', '1');
+        }
+      });
+
+      window.addEventListener('appinstalled', function() {
+        window.__oraDeferredPwaPrompt = null;
+        const wrap = document.getElementById('oraPwaNativeBtnWrap');
+        if (wrap) wrap.style.display = 'none';
+        const pill = document.getElementById('oraPwaInstallBtn');
+        if (pill) pill.style.display = 'none';
+      });
+
+      window.__oraPwaTriggerNativePrompt = async function() {
+        if (!window.__oraDeferredPwaPrompt) return;
+        window.__oraDeferredPwaPrompt.prompt();
+        try { await window.__oraDeferredPwaPrompt.userChoice; } catch (_) {}
+        window.__oraDeferredPwaPrompt = null;
+        window.__oraPwaCloseModal();
+      };
+
+      window.__oraPwaCopyUrl = function() {
+        const val = document.getElementById('oraPwaHttpsInput')?.value || OFFICIAL_HTTPS_URL;
+        if (navigator.clipboard) navigator.clipboard.writeText(val).then(function() { alert('공식 웹앱 주소가 복사되었습니다!\n' + val); }).catch(function() {});
+      };
+
+      window.__oraPwaOpenModal = function() {
+        if (window.__oraDeferredPwaPrompt) {
+          window.__oraPwaTriggerNativePrompt();
+          return;
+        }
+        const notice = document.getElementById('oraPwaHttpsNotice');
+        if (notice) notice.style.display = IS_SECURE_SW ? 'none' : 'block';
+        const inp = document.getElementById('oraPwaHttpsInput');
+        if (inp) inp.value = (APP_KEY === 'kimdaeri' ? OFFICIAL_HTTPS_URL : OFFICIAL_HTTPS_URL);
+        document.getElementById('oraPwaModalBg')?.classList.add('open');
+      };
+
+      window.__oraPwaCloseModal = function() {
+        document.getElementById('oraPwaModalBg')?.classList.remove('open');
+      };
+    })();
+  </script>
+  <!-- ORA_PWA_HELPER_END -->
 </body>
 </html>
