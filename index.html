@@ -1398,7 +1398,7 @@
       recalcImportMargin();
       const c = window._lastSourcedCalc || { name: '오라테크 신상품', cost: 200000, price: 450000 };
       const code = extractModelCodeFromName(c.name);
-      const posterPrompt = `[${c.name}] 추천판매가 ${Number(c.price || 0).toLocaleString()}원 · 오라테크 정품 한글 명판 OEM, 청계천 직영 A/S, 오후 3시 당일 화물 출고를 강조한 860px 올인원 상세페이지 통이미지`;
+      const posterPrompt = `[${c.name}] 추천판매가 ${Number(c.price || 0).toLocaleString()}원 · 오라테크 정품 한글 명판 OEM, 자체 직영 A/S, 오후 3시 당일 화물 출고를 강조한 860px 통이미지 상세페이지`;
       const base = IS_APP_SERVER ? '/studio' : 'https://igan3w.github.io/studio/';
       const qp = new URLSearchParams({ code, posterPrompt });
       window.open(`${base}?${qp.toString()}`, '_blank');
@@ -1683,7 +1683,7 @@
           ` : `
             <b>[납품 및 보증 특기사항]</b><br>
             1. 납기 및 배송: 평일 오후 3시 이전 발주 시 당일 출고 (경동화물/택배 즉시 발송)<br>
-            2. 정품 보증: (주)오라테크 본사 시리얼 정품 1년 무상 A/S 보증 및 순정 부품 상시 보유<br>
+            2. 정품 보증: (주)오라테크 공식 시리얼 정품 1년 무상 A/S 보증 및 순정 부품 상시 보유<br>
             3. 결제 및 증빙: 국세청 전자세금계산서 100% 당일 발행 · 우리은행 011-058791-12-001 (김향래/오라테크)
           `}
         </div>
